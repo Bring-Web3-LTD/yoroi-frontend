@@ -55,6 +55,9 @@ export const ROUTES = {
     ROOT: '/assets',
     DETAILS: '/assets/tokens/:tokenId',
   },
+  CASHBACK: {
+    ROOT: '/cashback'
+  },
   NFTS: {
     ROOT: '/nfts',
     DETAILS: '/nfts/:nftId',
