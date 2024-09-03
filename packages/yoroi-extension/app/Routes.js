@@ -125,7 +125,7 @@ const TokensPageRevamp = React.lazy(TokensPageRevampPromise);
 const TokensDetailPageRevampPromise = () => import('./containers/wallet/TokenDetailPageRevamp');
 const TokensDetailPageRevamp = React.lazy(TokensDetailPageRevampPromise);
 
-const CashbackPagePromise = () => import('./containers/cashback/cashbackPage');
+const CashbackPagePromise = () => import('./containers/cashback/CashbackPage');
 const CashbackPage = React.lazy(CashbackPagePromise)
 
 const NFTsPageRevampPromise = () => import('./containers/wallet/NFTsPageRevamp');
@@ -246,7 +246,7 @@ export const Routes = (stores: StoresMap, actions: ActionsMap): Node => {
           />
           <Route
             path={ROUTES.CASHBACK.ROOT}
-            component={props => <CashbackPage {...props} />}
+            component={props => <CashbackPage {...props} stores={stores} actions={actions} />}
           />
           <Route
             path={ROUTES.NFTS.ROOT}

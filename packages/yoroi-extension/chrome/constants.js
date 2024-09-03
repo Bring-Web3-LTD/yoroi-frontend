@@ -5,11 +5,11 @@ export function genCSP(request: {|
   isDev: boolean,
   additional: {|
     'default-src'?: Array<string>,
-    'frame-src'?: Array<string>,
-    'object-src'?: Array<string>,
-    'connect-src'?: Array<string>,
-    'style-src'?: Array<string>,
-    'img-src'?: Array<string>,
+      'frame-src' ?: Array < string >,
+      'object-src' ?: Array < string >,
+      'connect-src' ?: Array < string >,
+      'style-src' ?: Array < string >,
+      'img-src' ?: Array < string >,
   |},
 |}): string {
   const defaultSrc = request.additional['default-src'] ?? [];
@@ -27,6 +27,8 @@ export function genCSP(request: {|
   frameSrc.push('https://connect.trezor.io/');
   frameSrc.push('https://emurgo.github.io/');
   frameSrc.push('https://www.youtube.com/')
+  frameSrc.push('http://localhost:5173/') // Bringweb3
+  frameSrc.push('https://sandbox-extension.bringweb3.io/') // Bringweb3
 
   // Analytics
   connectSrc.push('https://analytics.emurgo-rnd.com/');
@@ -62,4 +64,5 @@ export function genCSP(request: {|
 export const injectedScripts = [
   'cardanoApiInject.js',
   'initialInject.js',
+  'bringContentScript.js',
 ];
