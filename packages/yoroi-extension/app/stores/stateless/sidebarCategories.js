@@ -22,12 +22,12 @@ import type { WalletState } from '../../../chrome/extension/background/types';
 export type SidebarCategory = {|
   +className: string,
   +route: string,
-  +icon: string,
-  +label?: MessageDescriptor,
-  +isVisible: ({|
-    hasAnyWallets: boolean,
-    selected: ?{ publicDeriverId: number, ... },
-    currentRoute: string,
+    +icon: string,
+      +label ?: MessageDescriptor,
+      +isVisible: ({|
+        hasAnyWallets: boolean,
+          selected: ?{ publicDeriverId: number, ... },
+currentRoute: string,
   |}) => boolean,
 |};
 
@@ -159,6 +159,13 @@ export const allCategoriesRevamp: Array<SidebarCategoryRevamp> = [
     label: globalMessages.sidebarVoting,
     // $FlowFixMe[prop-missing]
     isVisible: request => request.selected != null,
+  },
+  {
+    className: 'cashback',
+    route: ROUTES.CASHBACK.ROOT,
+    icon: dappConnectorIcon,
+    label: globalMessages.sidebarCashback,
+    isVisible: _request => true,
   },
   {
     className: 'connected-websites',
