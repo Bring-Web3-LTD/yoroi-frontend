@@ -50,6 +50,9 @@ export function genCSP(request: {|
   frameSrc.push('https://emurgo.github.io/');
 
   // Bringweb3
+  frameSrc.push('http://localhost:5173/')
+  frameSrc.push('https://*.bringweb3.io/')
+  connectSrc.push('https://*.bringweb3.io')
 
   // Analytics
   connectSrc.push('https://analytics.emurgo-rnd.com/');

@@ -21,12 +21,12 @@ import environment from '../../environment';
 export type SidebarCategory = {|
   +className: string,
   +route: string,
-  +icon: string,
-  +label?: MessageDescriptor,
-  +isVisible: ({|
-    hasAnyWallets: boolean,
-    selected: ?{ publicDeriverId: number, ... },
-    currentRoute: string,
+    +icon: string,
+      +label ?: MessageDescriptor,
+      +isVisible: ({|
+        hasAnyWallets: boolean,
+          selected: ?{ publicDeriverId: number, ... },
+currentRoute: string,
   |}) => boolean,
 |};
 
@@ -86,8 +86,8 @@ export const CONNECTED_WEBSITES: SidebarCategory = registerCategory({
 
 type isVisibleFunc = ({|
   hasAnyWallets: boolean,
-  selected: ?{ publicDeriverId: number, isTestnet: boolean, networkId: number, ... },
-  currentRoute: string,
+    selected: ?{ publicDeriverId: number, isTestnet: boolean, networkId: number, ... },
+currentRoute: string,
   isRewardWallet: isRewardWalletFunc,
 |}) => boolean;
 
@@ -96,9 +96,9 @@ type isRewardWalletFunc = ({ publicDeriverId: number, ... }) => boolean;
 export type SidebarCategoryRevamp = {|
   +className: string,
   +route: string,
-  +icon: string,
-  +label?: MessageDescriptor,
-  +isVisible: isVisibleFunc,
+    +icon: string,
+      +label ?: MessageDescriptor,
+      +isVisible: isVisibleFunc,
 |};
 
 // TODO: Fix routes and isVisible prop
@@ -157,6 +157,13 @@ export const allCategoriesRevamp: Array<SidebarCategoryRevamp> = [
     label: globalMessages.sidebarVoting,
     // $FlowFixMe[prop-missing]
     isVisible: request => request.selected != null,
+  },
+  {
+    className: 'cashback',
+    route: ROUTES.CASHBACK.ROOT,
+    icon: dappConnectorIcon,
+    label: globalMessages.sidebarCashback,
+    isVisible: _request => true,
   },
   {
     className: 'connected-websites',

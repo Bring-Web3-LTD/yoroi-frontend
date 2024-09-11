@@ -68,6 +68,8 @@ export default ({
     },
     permissions: [
       'storage',
+      'alarms',
+      'tabs',
       '*://connect.trezor.io/*',
       'https://emurgo.github.io/yoroi-extension-ledger-connect-vnext/*'
     ],

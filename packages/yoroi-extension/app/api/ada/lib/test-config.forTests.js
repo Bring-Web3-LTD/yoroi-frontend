@@ -21,6 +21,11 @@ const CONFIG: ConfigType = {
     pubKeyData: '',
     pubKeyMaster: '',
   },
+  bring: {
+    baseUrl: '',
+    iframeSrc: '',
+    identifier: ''
+  }
 };
 
 global.CONFIG = CONFIG;
