@@ -1,6 +1,7 @@
 // @flow
 import type { MessageDescriptor } from 'react-intl';
 import { ReactComponent as dappConnectorIcon } from '../../assets/images/dapp-connector/dapp-connector.inline.svg';
+import { ReactComponent as CashbackIcon } from '../../assets/images/sidebar/cashback.inline.svg';
 import { ReactComponent as walletsIcon } from '../../assets/images/sidebar/my_wallets.inline.svg';
 import { ReactComponent as assetsIcon } from '../../assets/images/sidebar/revamp/assets.inline.svg';
 import { ReactComponent as governanceIcon } from '../../assets/images/sidebar/revamp/governance.inline.svg';
@@ -87,9 +88,9 @@ export const CONNECTED_WEBSITES: SidebarCategory = registerCategory({
 
 type isVisibleFunc = ({|
   hasAnyWallets: boolean,
-  selected: ?WalletState,
-  currentRoute: string,
-  isRewardWallet: isRewardWalletFunc,
+    selected: ?WalletState,
+      currentRoute: string,
+        isRewardWallet: isRewardWalletFunc,
 |}) => boolean;
 
 type isRewardWalletFunc = ({ publicDeriverId: number, ... }) => boolean;
@@ -97,10 +98,10 @@ type isRewardWalletFunc = ({ publicDeriverId: number, ... }) => boolean;
 export type SidebarCategoryRevamp = {|
   +className: string,
   +route: string,
-  +icon: string,
-  +label?: MessageDescriptor,
-  +isVisible: isVisibleFunc,
-  +featureFlagName?: string,
+    +icon: string,
+      +label ?: MessageDescriptor,
+      +isVisible: isVisibleFunc,
+        +featureFlagName ?: string,
 |};
 
 // TODO: Fix routes and isVisible prop
@@ -163,7 +164,7 @@ export const allCategoriesRevamp: Array<SidebarCategoryRevamp> = [
   {
     className: 'cashback',
     route: ROUTES.CASHBACK.ROOT,
-    icon: dappConnectorIcon,
+    icon: CashbackIcon,
     label: globalMessages.sidebarCashback,
     isVisible: _request => true,
   },
