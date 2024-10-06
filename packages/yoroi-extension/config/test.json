@@ -20,7 +20,6 @@
   },
   "bring": {
     "baseUrl": "https://sandbox-api.bringweb3.io/v1/extension/check/portal",
-    "iframeSrc": "https://sandbox-extension.bringweb3.io",
     "identifier": "G1TjqDrfxS8jhRYz15Sg2fMGsvZpdFF8IWgKe0g8"
   }
 }

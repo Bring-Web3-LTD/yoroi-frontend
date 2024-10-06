@@ -23,7 +23,8 @@ import { getPublicDeriverById } from '../../../chrome/extension/background/handl
 import Dialog from '../../components/widgets/Dialog';
 import DialogCloseButton from '../../components/widgets/DialogCloseButton';
 import DialogTextBlock from '../../components/widgets/DialogTextBlock'
-import { Box, TextField, InputAdornment, IconButton, Tooltip, Typography } from '@mui/material';
+import { Address } from '@emurgo/cardano-serialization-lib-browser'
+import { Box, TextField, InputAdornment, IconButton, Tooltip, Typography, DialogContentText } from '@mui/material';
 
 type Props = StoresAndActionsProps;
 
@@ -33,13 +34,15 @@ type AllProps = {| ...Props, ...InjectedLayoutProps |};
 type IframeMessageData = {|
   action: string,
     bgColor ?: string,
-    message: string
-      |};
+    message: string,
+      amount: number
+        |};
 
 const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllProps) => {
   const { actions, stores } = props;
   const theme = useTheme();
   // const intl = useContext(IntlContext);
+  console.log({ theme });
 
   const iframeRef = useRef < HTMLIFrameElement | null > (null);
   const [iframeSrc, setIframeSrc] = useState('');
@@ -49,16 +52,15 @@ const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllPr
   const [showPassword, setShowPassword] = useState(false)
   const [errMsg, setErrMsg] = useState('')
   const [message, setMessage] = useState('')
+  const [claimAmount, setClaimAmount] = useState(0)
   const [signaturePopup, setSignaturePopup] = useState(false);
   const [overlayBgColor, setOverlayBgColor] = useState('#000000fa');
 
   const fetchIframeUrl = useCallback(async () => {
     try {
-      console.log({ themeBring: theme.name.split('-')[0] });
-
       const publicDeriver = stores.wallets.selected;
       if (!publicDeriver) throw Error('no publicDeriver');
-      const walletAddress = publicDeriver.externalAddressesByType[CoreAddressTypes.CARDANO_BASE][0].address;
+      const walletAddress = Address.from_hex(publicDeriver.externalAddressesByType[CoreAddressTypes.CARDANO_BASE][0].address).to_bech32();
 
       const response = await fetch(`${environment.bringBaseUrl}check/portal`, {
         method: 'POST',
@@ -69,74 +71,60 @@ const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllPr
         body: JSON.stringify({ walletAddress }),
       });
       const data = await response.json();
+      const url = new URL(data.iframeUrl);
+      url.searchParams.set('theme', theme.name.split('-')[0]);
+      url.searchParams.set('token', data.token);
 
-      const queryParams = new URLSearchParams({ ...data, theme: theme.name.split('-')[0] }).toString();
-      const newIframeSrc = `${environment.bringIframeSrc}/?${queryParams}`;
-
-      setIframeSrc(newIframeSrc);
+      setIframeSrc(url.href);
       setStatus('done');
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   }, [stores.wallets.selected]);
 
+  function stringToHex(str) {
+    return Array.from(str)
+      .map(char => char.charCodeAt(0).toString(16).padStart(2, '0'))
+      .join('');
+  }
+
   const signMessage = useCallback(async (message: string, password: string) => {
     const wallet = stores.wallets.selected;
     if (!wallet) throw Error('no publicDeriver');
     const address = wallet.externalAddressesByType[CoreAddressTypes.CARDANO_BASE][0].address;
     const publicDeriver = await getPublicDeriverById(wallet.publicDeriverId)
-    let res: {| key: string, signature: string |}| null = null
-    console.log({ step: 'before', address, message });
-  try {
-    res = await walletSignData(publicDeriver, password, address, '74657374')
-    console.log({ step: 'after', ...res, message: 'test', address });
+    try {
+      const res = await walletSignData(publicDeriver, password, address, stringToHex(message))
+      iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'SIGNATURE', ...res, message, address }, '*');
+      setSignaturePopup(false)
+      setPassword('')
+    } catch (error) {
+      setErrMsg(error.message)
+      // console.warn(error);
+    }
+  }, []);
 
-  } catch (error) {
-    setErrMsg(error.message)
-    console.warn(error);
+  const handleMessage = useCallback(async (event: MessageEvent) => {
+    const iframeOrigin = new URL(iframeSrc).origin;
+
+    if (event.origin !== iframeOrigin) {
+      return;
+    }
+
+    console.log('Received message from iframe:', event.data);
+
+    const messageData: IframeMessageData = (event.data: any);
+
+  if (messageData.action === 'SIGN_MESSAGE') {
+    setClaimAmount(messageData.amount)
+    setMessage(messageData.message)
+    setSignaturePopup(true)
+  } else if (messageData.action === 'OPEN_POPUP') {
+    setPopup(true);
+    setOverlayBgColor(messageData.bgColor || overlayBgColor);
+  } else if (messageData.action === 'CLOSE_POPUP') {
+    setPopup(false);
   }
-  iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'SIGNATURE', ...res, message, address }, '*');
-  setSignaturePopup(false)
-}, []);
-
-const handleMessage = useCallback(async (event: MessageEvent) => {
-  const iframeOrigin = new URL(iframeSrc).origin;
-
-  if (event.origin !== iframeOrigin) {
-    return;
-  }
-
-  console.log('Received message from iframe:', event.data);
-
-  const messageData: IframeMessageData = (event.data: any);
-
-if (messageData.action === 'SIGN_MESSAGE') {
-  // const wallet = stores.wallets.selected;
-  setMessage(messageData.message)
-  setSignaturePopup(true)
-  //   if (!wallet) throw Error('no publicDeriver');
-  //   const address = wallet.externalAddressesByType[CoreAddressTypes.CARDANO_BASE][0].address;
-  //   const publicDeriver = await getPublicDeriverById(wallet.publicDeriverId)
-  //   let res: {| key: string, signature: string |}| null = null
-  // try {
-  //   res = await walletSignData(publicDeriver, 'Mottiemmanuelle123', address, messageData.messageToSign)
-  // } catch (error) {
-  //   setErrMsg(error.message)
-  //   console.warn(error);
-  // }
-  // console.log({ res });
-
-  // const iframe = document.getElementById('bringweb3');
-  // if (iframe instanceof HTMLIFrameElement) {
-  //   iframe.contentWindow.postMessage({ from: 'bringweb3', action: 'SIGNATURE', ...res, message: messageData.messageToSign }, '*');
-  // }
-
-} else if (messageData.action === 'OPEN_POPUP') {
-  setPopup(true);
-  setOverlayBgColor(messageData.bgColor || overlayBgColor);
-} else if (messageData.action === 'CLOSE_POPUP') {
-  setPopup(false);
-}
 }, [iframeSrc, overlayBgColor]);
 
 useEffect(() => {
@@ -155,11 +143,14 @@ useEffect(() => {
 }, [iframeSrc, fetchIframeUrl, handleMessage]);
 
 const closePopup = useCallback(() => {
-  const iframeElement = document.getElementById('bringweb3');
-  if (iframeElement instanceof HTMLIFrameElement) {
-    iframeElement.contentWindow.postMessage({ action: 'CLOSE_POPUP' }, '*');
-  }
+  iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'CLOSE_POPUP' }, '*');
   setPopup(false);
+}, []);
+
+const abortClaim = useCallback(() => {
+  iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'ABORT' }, '*');
+  setSignaturePopup(false)
+  setPassword('')
 }, []);
 
 const sidebarContainer = <SidebarContainer actions={actions} stores={stores} />;
@@ -184,7 +175,7 @@ return (
             title='CLAIM CASHBACK'
             closeOnOverlayClick
             closeButton={<DialogCloseButton />}
-            onClose={() => setSignaturePopup(false)}
+            onClose={abortClaim}
             actions={[{
               label: 'CONFIRM',
               primary: true,
@@ -193,21 +184,17 @@ return (
             }]}
           >
             <Box>
-              <Typography>
-                Enter your password and confirm to claim the cashback rewards.
+              <Typography sx={{ marginBottom: "16px", color: theme.name === 'light-theme' ? '#242838' : '#E1E6F5' }}>
+                Enter your password to claim cashback rewards.
               </Typography>
-              <DialogTextBlock>
-                Cashback rewards
-                <Tooltip
-                  placement='top'
-                  title={<Typography align='center' component="div" variant="body3">Cashback amount rewarded for online shopping</Typography>}
-                >
-                  i
-                </Tooltip>
-              </DialogTextBlock>
-              <Typography>
-                300 ADA
+              <Typography sx={{ color: theme.name === 'light-theme' ? '#6B7384' : '#7C85A3' }}>
+                Message
               </Typography>
+              <DialogContentText sx={{
+                whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: theme.name === 'light-theme' ? '#242838' : '#E1E6F5'
+              }}>
+                {message}
+              </DialogContentText>
               <TextField
                 className="walletPassword"
                 value={password}
@@ -231,37 +218,7 @@ return (
                 disabled={false}
               />
             </Box>
-            {/* <TextField /> */}
           </Dialog>
-          : null}
-        {signaturePopup ?
-          // <div className={styles.overlay}>
-          //   <div className={styles.popup}>
-          //     <button
-          //       className={styles.close_btn}
-          //       onClick={() => setSignaturePopup(false)}
-          //     >X</button>
-          //     <div>
-          //       Sign
-          //     </div>
-          //     <form
-          //       className={styles.form}
-          //       onSubmit={(e) => {
-          //         e.preventDefault()
-          //         signMessage(message, password)
-          //       }}
-          //     >
-          //       <input
-          //         type='text'
-          //         value={password}
-          //         onChange={e => setPassword(e.target.value)}
-          //       />
-          //       {errMsg ? <div>{errMsg}</div> : null}
-          //       <input type='submit' value={'Sign'} />
-          //     </form>
-          //   </div>
-          // </div>
-          <></>
           : null}
         {popup ? (
           <div
@@ -282,7 +239,7 @@ return (
         )}
       </Suspense>
     </FullscreenLayout>
-  </TopBarLayout>
+  </TopBarLayout >
 );
 });
 
