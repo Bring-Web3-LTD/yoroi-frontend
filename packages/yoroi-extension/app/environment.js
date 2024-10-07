@@ -42,7 +42,6 @@ export const environment = ((
     getServerStatusRefreshInterval: () => CONFIG.app.serverStatusRefreshInterval,
     userAgentInfo,
     bringBaseUrl: CONFIG.bring.baseUrl,
-    bringIframeSrc: CONFIG.bring.iframeSrc,
     bringIdentifier: CONFIG.bring.identifier
   }
 ): {
@@ -62,8 +61,7 @@ export const environment = ((
                             userAgentInfo: UserAgentInfo,
                               isLight: boolean,
                                 bringBaseUrl: string,
-                                  bringIframeSrc: string,
-                                    bringIdentifier: string,
+                                  bringIdentifier: string,
     ...
 });
 

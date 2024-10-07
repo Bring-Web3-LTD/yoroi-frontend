@@ -6,11 +6,9 @@ import { init } from './state';
 import { startMonitorServerStatus } from './serverStatus';
 import { startPoll } from './coinPrice';
 import { environment } from '../../../app/environment';
-import bringInitBackground from './bring'
 /*::
 declare var chrome;
 */
-bringInitBackground();
 
 const onYoroiIconClicked = () => {
   chrome.tabs.create({ url: 'main_window.html' });

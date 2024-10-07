@@ -9,9 +9,8 @@ export type ConfigType = {|
 
 export type BringConfigType = {|
   baseUrl: string,
-    iframeSrc: string,
-      identifier: string
-        |}
+    identifier: string
+      |}
 
 export type PoolExplorerConfigType = {|
   simpleTemplate: string,

@@ -23,7 +23,6 @@ const CONFIG: ConfigType = {
   },
   bring: {
     baseUrl: '',
-    iframeSrc: '',
     identifier: ''
   }
 };
