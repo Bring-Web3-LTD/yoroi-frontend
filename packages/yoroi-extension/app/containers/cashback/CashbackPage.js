@@ -72,8 +72,8 @@ const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllPr
       });
       const data = await response.json();
       const url = new URL(data.iframeUrl);
-      url.searchParams.set('theme', theme.name.split('-')[0]);
       url.searchParams.set('token', data.token);
+      url.searchParams.set('theme', theme.name.split('-')[0]);
 
       setIframeSrc(url.href);
       setStatus('done');
