@@ -33,8 +33,8 @@ type AllProps = {| ...Props, ...InjectedLayoutProps |};
 
 type IframeMessageData = {|
   action: string,
-    bgColor ?: string,
-    message: string,
+    overlayBgColor ?: string,
+    messageToSign: string,
       amount: number
         |};
 
@@ -42,7 +42,6 @@ const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllPr
   const { actions, stores } = props;
   const theme = useTheme();
   // const intl = useContext(IntlContext);
-  console.log({ theme });
 
   const iframeRef = useRef < HTMLIFrameElement | null > (null);
   const [iframeSrc, setIframeSrc] = useState('');
@@ -95,7 +94,7 @@ const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllPr
     const publicDeriver = await getPublicDeriverById(wallet.publicDeriverId)
     try {
       const res = await walletSignData(publicDeriver, password, address, stringToHex(message))
-      iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'SIGNATURE', ...res, message, address }, '*');
+      iframeRef.current?.contentWindow.postMessage({ to: 'bringweb3', action: 'SIGNATURE', ...res, message, address }, '*');
       setSignaturePopup(false)
       setPassword('')
     } catch (error) {
@@ -111,18 +110,17 @@ const CashbackPageContainer: React$ComponentType<Props> = observer((props: AllPr
       return;
     }
 
-    console.log('Received message from iframe:', event.data);
-
     const messageData: IframeMessageData = (event.data: any);
 
   if (messageData.action === 'SIGN_MESSAGE') {
     setClaimAmount(messageData.amount)
-    setMessage(messageData.message)
+
+    setMessage(messageData.messageToSign)
     setSignaturePopup(true)
-  } else if (messageData.action === 'OPEN_POPUP') {
+  } else if (messageData.action === 'POPUP_OPENED') {
     setPopup(true);
-    setOverlayBgColor(messageData.bgColor || overlayBgColor);
-  } else if (messageData.action === 'CLOSE_POPUP') {
+    setOverlayBgColor(messageData.overlayBgColor || overlayBgColor);
+  } else if (messageData.action === 'POPUP_CLOSED') {
     setPopup(false);
   }
 }, [iframeSrc, overlayBgColor]);
@@ -143,12 +141,12 @@ useEffect(() => {
 }, [iframeSrc, fetchIframeUrl, handleMessage]);
 
 const closePopup = useCallback(() => {
-  iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'CLOSE_POPUP' }, '*');
+  iframeRef.current?.contentWindow.postMessage({ to: 'bringweb3', action: 'CLOSE_POPUP' }, '*');
   setPopup(false);
 }, []);
 
 const abortClaim = useCallback(() => {
-  iframeRef.current?.contentWindow.postMessage({ from: 'bringweb3', action: 'ABORT' }, '*');
+  iframeRef.current?.contentWindow.postMessage({ to: 'bringweb3', action: 'ABORT_SIGN_MESSAGE' }, '*');
   setSignaturePopup(false)
   setPassword('')
 }, []);
@@ -214,7 +212,7 @@ return (
                 onChange={e => {
                   setPassword(e.target.value);
                 }}
-                error={errMsg && 'Incorrect password!'}
+                error={!!errMsg}
                 disabled={false}
               />
             </Box>
