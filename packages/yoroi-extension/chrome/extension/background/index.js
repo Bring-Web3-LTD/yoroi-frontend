@@ -6,10 +6,17 @@ import { init } from './state';
 import { startMonitorServerStatus } from './serverStatus';
 import { startPoll } from './coinPrice';
 import { environment } from '../../../app/environment';
+import { bringInitBackground } from '@bringweb3/chrome-extension-kit'
 
 /*::
 declare var chrome;
 */
+
+bringInitBackground({
+  identifier: 'G1TjqDrfxS8jhRYz15Sg2fMGsvZpdFF8IWgKe0g8',
+  apiEndpoint: 'sandbox',
+  cashbackPagePath: '/wallet/cashback'
+});
 
 const onYoroiIconClicked = () => {
   chrome.tabs.create({ url: 'main_window.html' });

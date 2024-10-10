@@ -68,6 +68,8 @@ export default ({
     },
     permissions: [
       'storage',
+      'alarms',
+      'tabs',
       '*://connect.trezor.io/*',
       'https://emurgo.github.io/yoroi-extension-ledger-connect-vnext/*'
     ],
@@ -78,7 +80,6 @@ export default ({
       },
       {
         matches: [
-          'file://*/*',
           'http://*/*',
           'https://*/*',
         ],
@@ -86,7 +87,6 @@ export default ({
           'js/bringInject.js',
         ],
         run_at: 'document_start',
-        all_frames: true,
       }
     ],
     content_security_policy: contentSecurityPolicy,
