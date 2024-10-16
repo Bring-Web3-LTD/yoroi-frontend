@@ -6,7 +6,7 @@ import { init } from './state';
 import { startMonitorServerStatus } from './serverStatus';
 import { startPoll } from './coinPrice';
 import { environment } from '../../../app/environment';
-import { bringInitBackground } from '@bringweb3/chrome-extension-kit'
+import { bringInitBackground } from '@bringweb3/chrome-extension-kit';
 
 /*::
 declare var chrome;
@@ -45,7 +45,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   return handleInjectorMessage(message, sender);
 });
-
 init().catch(console.error);
 startMonitorServerStatus();
 startPoll();

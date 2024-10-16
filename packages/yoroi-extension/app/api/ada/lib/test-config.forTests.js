@@ -21,6 +21,10 @@ const CONFIG: ConfigType = {
     pubKeyData: '',
     pubKeyMaster: '',
   },
+  bring: {
+    baseUrl: '',
+    identifier: ''
+  }
 };
 
 global.CONFIG = CONFIG;
