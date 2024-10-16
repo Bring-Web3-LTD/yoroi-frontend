@@ -262,29 +262,3 @@ function listenForActiveWalletOpen(callback) {
     text: 'upper'
   });
 })().catch(console.error);
-
-
-async function example() {
-  try {
-    const addr = await getFirstAddress();
-    console.log('address', addr);
-  } catch (error) {
-    if (error.message === 'no wallet') {
-      console.log('no wallet');
-      if (window.confirm('no wallet, click OK to create')) {
-        popUpWalletCreation();
-      }
-    } else {
-      throw error;
-    }
-  }
-
-  const theme = await getTheme();
-  console.log('theme:', theme);
-
-  listenForActiveWalletOpen((walletId: ?number) => {
-    console.log('active wallet ID is:', walletId);
-  });
-}
-
-// example().catch(console.error);

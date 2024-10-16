@@ -42,7 +42,8 @@ export const environment = ((
     getServerStatusRefreshInterval: () => CONFIG.app.serverStatusRefreshInterval,
     userAgentInfo,
     bringBaseUrl: CONFIG.bring.baseUrl,
-    bringIdentifier: CONFIG.bring.identifier
+    bringIdentifier: CONFIG.bring.identifier,
+    bringApiEndpoint: CONFIG.bring.apiEndpoint
   }
 ): {
   getNetworkName: void => Network,
@@ -62,6 +63,7 @@ export const environment = ((
                               isLight: boolean,
                                 bringBaseUrl: string,
                                   bringIdentifier: string,
+                                    bringApiEndpoint: string,
     ...
 });
 

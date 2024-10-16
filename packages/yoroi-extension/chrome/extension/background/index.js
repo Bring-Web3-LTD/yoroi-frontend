@@ -13,9 +13,9 @@ declare var chrome;
 */
 
 bringInitBackground({
-  identifier: 'G1TjqDrfxS8jhRYz15Sg2fMGsvZpdFF8IWgKe0g8',
-  apiEndpoint: 'sandbox',
-  cashbackPagePath: '/wallet/cashback'
+  identifier: environment.bringIdentifier,
+  apiEndpoint: environment.bringApiEndpoint,
+  cashbackPagePath: '/main_window.html#/cashback'
 });
 
 const onYoroiIconClicked = () => {

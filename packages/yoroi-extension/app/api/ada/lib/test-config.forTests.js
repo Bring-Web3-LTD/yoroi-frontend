@@ -23,7 +23,8 @@ const CONFIG: ConfigType = {
   },
   bring: {
     baseUrl: '',
-    identifier: ''
+    identifier: '',
+    apiEndpoint: ''
   }
 };
 

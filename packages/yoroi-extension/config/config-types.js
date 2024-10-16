@@ -9,8 +9,9 @@ export type ConfigType = {|
 
 export type BringConfigType = {|
   baseUrl: string,
-    identifier: string
-      |}
+    identifier: string,
+      apiEndpoint: string
+        |}
 
 export type PoolExplorerConfigType = {|
   simpleTemplate: string,
