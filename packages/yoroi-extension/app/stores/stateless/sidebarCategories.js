@@ -188,7 +188,6 @@ export const allCategoriesRevamp: Array<SidebarCategoryRevamp> = [
     icon: governanceIcon,
     label: globalMessages.sidebarGovernance,
     isVisible: ({ selected }) => selected != null && selected.type !== 'trezor',
-    featureFlagName: 'governance',
   },
   {
     className: 'settings',
